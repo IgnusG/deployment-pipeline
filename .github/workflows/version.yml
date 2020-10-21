@@ -17,8 +17,9 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            if (!['major', 'minor', 'patch'].includes('${{ github.event.inputs.version }}'))
-              core.setFailed('Use one of major/minor/patch');
+            const level = '${{ github.event.inputs.version }}';
+            if (!['major', 'minor', 'patch'].includes(level))
+              core.setFailed(`Use one of major/minor/patch. Not ${level}`);
 
       - uses: actions/checkout@v2
 
@@ -32,7 +33,7 @@ jobs:
 
       - name: Update main branch
         run: |
-          git push --follow-tags || (echo "::error::Pushing the version bump failed" && exit 1)
+          git push --follow-tags || (echo "::error::Pushing the new version failed. You have probably commited other changes in the meantime" && exit 1)
 
       - name: Handle erros
         if: always()
