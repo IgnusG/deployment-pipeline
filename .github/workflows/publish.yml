@@ -7,7 +7,7 @@ on:
 jobs:
   publish:
     name: Publish
-    runs: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - run: |
           echo "${{ toJson(github.event) }}"
