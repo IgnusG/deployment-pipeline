@@ -24,11 +24,11 @@ jobs:
               repo
             });
 
-            const statuses = (await Promise.all(deployments.map(({ id }) => github.repos.listDeploymentStatuses({
+            const statuses = (await Promise.all(deployments.map(async ({ id }) => [id, await github.repos.listDeploymentStatuses({
               owner,
               repo,
               deployment_id: id
-            })))).map(({ data }) => data);
+            })]))).map(([id, { data }]) => [id, data]);
 
             console.log('Status', JSON.stringify(statuses));
 
