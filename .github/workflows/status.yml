@@ -25,5 +25,5 @@ jobs:
             });
 
             deploymentsPromise.then((deployments) => {
-              console.log('Deployment', JSON.stringify(deployment));
+              console.log('Deployment', JSON.stringify(deployments));
             });
