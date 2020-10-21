@@ -1,6 +1,7 @@
 name: Update Deployment Status
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "* * * * *"
 
