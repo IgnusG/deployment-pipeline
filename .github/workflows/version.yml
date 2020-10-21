@@ -10,6 +10,7 @@ on:
 
 jobs:
   bump_version:
+    name: Bump Version
     runs-on: ubuntu-latest
     steps:
       - run: |
