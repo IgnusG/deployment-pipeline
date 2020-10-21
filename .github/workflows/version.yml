@@ -40,6 +40,7 @@ jobs:
       - name: Create release
         uses: actions/github-script@v3
         with:
+          github-token: ${{ secrets.ACTIONS_TOKEN }}
           script: |
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];
