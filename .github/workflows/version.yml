@@ -17,7 +17,7 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            if (!['major', 'minor', 'patch'].includes(${{ github.event.inputs.version }}))
+            if (!['major', 'minor', 'patch'].includes('${{ github.event.inputs.version }}'))
               core.setFailed('Use one of major/minor/patch');
 
       - uses: actions/checkout@v2
