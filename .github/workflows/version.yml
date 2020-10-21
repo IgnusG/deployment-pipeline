@@ -29,7 +29,7 @@ jobs:
 
       - name: Bump version
         run: |
-          npm version ${{ github.event.inputs.version }} -m "Bump version to v%s"
+          make version bump=${{ github.event.inputs.version }}
 
       - name: Update main branch
         run: |
