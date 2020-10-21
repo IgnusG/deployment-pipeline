@@ -52,14 +52,13 @@ jobs:
                 body: `Bumping the version failed on this commit\nSee: ${run_url}`
               });
 
-              github.checks.create({
+              github.repos.createCommitStatus({
                 owner,
                 repo,
-                head_sha: sha,
-                name: 'Version Bump Failed',
-                details_url: run_url,
-                status: 'completed',
-                conclusion: 'failure'
+                sha,
+                description: 'Version Bump Failed',
+                target_url: run_url,
+                state: 'failure',
               });
             }
 
