@@ -10,7 +10,7 @@ on:
 
 jobs:
   bump_version:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - run: |
           echo "Bumping Version ${{ github.event.inputs.version }}"
