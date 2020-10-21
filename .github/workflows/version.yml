@@ -18,7 +18,7 @@ jobs:
         with:
           script: |
             const level = '${{ github.event.inputs.version }}';
-            if (!['major', 'minor', 'patch'].includes(level))
+            if (!['major', 'minor', 'patch', 'premajor', 'preminor', 'prepatch', 'prerelease'].includes(level))
               core.setFailed(`Use one of major/minor/patch. Not ${level}`);
 
       - uses: actions/checkout@v2
