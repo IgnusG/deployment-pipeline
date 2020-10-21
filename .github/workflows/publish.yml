@@ -1,0 +1,14 @@
+name: Publish
+
+on:
+  release:
+    types: [released,prereleased]
+
+jobs:
+  publish:
+    name: Publish
+    runs: ubuntu-latest
+    steps:
+      - run: |
+          echo "${{ toJson(github.event) }}"
+
