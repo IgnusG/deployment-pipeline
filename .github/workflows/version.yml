@@ -1,0 +1,17 @@
+name: Bump Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Bump major/minor/patch?'
+        required: true
+        default: 'patch'
+
+jobs:
+  bump_version:
+    runs_on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Bumping Version ${{ github.event.inputs.version }}"
+
