@@ -30,20 +30,11 @@ jobs:
             const ref = '${{ github.ref }}';
             const environment = '${{ github.event.action }}' === 'released' ? 'public' : 'preview'
 
-            const response = github.repos.createDeployment({
+            github.repos.createDeployment({
               owner,
               repo,
               ref,
               required_contexts: [],
               environment
             })
-
-            response.then(({ id }) => {
-              github.repos.createDeploymentStatus({
-                owner,
-                repo,
-                deployment_id: id,
-                state: 'pending'
-              });
-            });
 
