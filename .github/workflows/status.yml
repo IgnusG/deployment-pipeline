@@ -24,6 +24,6 @@ jobs:
               ref,
             });
 
-            deploymentsPromise.then((deployments) => {
+            deploymentsPromise.then(({ data: deployments}) => {
               console.log('Deployment', JSON.stringify(deployments));
             });
