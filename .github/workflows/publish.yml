@@ -9,14 +9,41 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
+      - uses: bahmutov/npm-install@v1
+        
       - run: |
-          echo "Releasing live"
+          make publish channel=public
         if: github.event.action == 'released'
 
       - run: |
-          echo "Releasing preview"
+          make publish channel=preview
         if: github.event.action == 'prereleased'
 
-      - run: |
-          echo "Always!"
+      - name: Create deployment
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const owner = '${{ github.repository_owner }}';
+            const repo = '${{ github.repository }}'.split('/')[1];
+            const ref = '${{ github.ref }}';
+            const environment = '${{ github.event.action }}' === 'released' ? 'public' : 'preview'
+
+            const response = github.repos.createDeployment({
+              owner,
+              repo,
+              ref,
+              required_contexts: [],
+              environment
+            })
+
+            response.then(({ id }) => {
+              github.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: id,
+                state: 'pending'
+              });
+            });
 
