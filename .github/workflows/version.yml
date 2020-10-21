@@ -29,11 +29,30 @@ jobs:
 
       - name: Bump version
         run: |
-          make version bump=${{ github.event.inputs.version }}
+          VERSION=$(make version bump=${{ github.event.inputs.version }})
+          echo "::set-output name=version::$VERSION"
+        id: version
 
       - name: Update main branch
         run: |
           git push --follow-tags || (echo "::error::Pushing the new version failed. You have probably commited other changes in the meantime" && exit 1)
+
+      - name: Create release
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const owner = '${{ github.repository_owner }}';
+            const repo = '${{ github.repository }}'.split('/')[1];
+            const version = '${{ steps.version.outputs.version }}';
+            const isPreview = version.includes('preview');
+
+            github.repos.createRelease({
+              owner,
+              repo,
+              tag_name: version,
+              name: `Version Release ${version}`,
+              prerelease: isPreview
+            });
 
       - name: Handle erros
         if: always()
