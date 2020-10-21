@@ -13,7 +13,7 @@ jobs:
     name: Bump Version
     runs-on: ubuntu-latest
     steps:
-      - name: Validate Input
+      - name: Validate input
         uses: actions/github-script@v3
         with:
           script: |
@@ -26,6 +26,11 @@ jobs:
 
       - uses: bahmutov/npm-install@v1
 
-      - run: |
+      - name: Bump version
+        run: |
           npm version ${{ github.event.inputs.version }}
+
+      - name: Update main branch
+        run: |
+          git push
 
