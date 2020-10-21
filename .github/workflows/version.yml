@@ -28,7 +28,7 @@ jobs:
 
       - name: Bump version
         run: |
-          npm version ${{ github.event.inputs.version }}
+          npm version ${{ github.event.inputs.version }} -m "Bump version to v%s"
 
       - name: Update main branch
         run: |
