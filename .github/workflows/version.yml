@@ -56,8 +56,10 @@ jobs:
                 owner,
                 repo,
                 head_sha: sha,
-                name: "Version Bump Failed",
-                details_url: run_url
+                name: 'Version Bump Failed',
+                details_url: run_url,
+                status: 'completed',
+                conclusion: 'failure'
               });
             }
 
