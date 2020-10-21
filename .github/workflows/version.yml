@@ -32,7 +32,7 @@ jobs:
 
       - name: Update main branch
         run: |
-          git push --follow-tags
+          git push --follow-tags || (echo "::error::Pushing the version bump failed" && exit 1)
 
       - name: Handle erros
         if: always()
