@@ -30,5 +30,16 @@ jobs:
               deployment_id: id
             })]))).map(([id, { data }]) => [id, data]);
 
-            console.log('Status', JSON.stringify(statuses));
+            await Promise.all(statuses.map(([id, statuses]) => {
+              if (statuses.find((status) => status.state === 'pending') || statuses.length === 0) {
+                return github.repos.createDeploymentStatus({
+                  owner,
+                  repo,
+                  deployment_id: id,
+                  state: 'success'
+                })
+              }
+
+              return Promise.resolve();
+            }));
 
