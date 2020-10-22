@@ -12,6 +12,13 @@ jobs:
     steps:
       - name: Update all deployments
         uses: actions/github-script@v3
+        env:
+          chrome_public: ${{ secrets.CHROME_PUBLIC }}
+          chrome_preview: 'CHROME_PREVIEW'
+          firefox_public: ${{ secrets.FIREFOX_PUBLIC }}
+          chrome_client_id: 'CHROME_CLIENT_ID'
+          chrome_client_secret: 'CHROME_CLIENT_SECRET'
+          chrome_refresh_token: 'CHROME_REFRESH_TOKEN'
         with:
           script: |
             const owner = '${{ github.repository_owner }}';
@@ -40,10 +47,18 @@ jobs:
               statuses.map(async ([deployment, status]) => {
                 const [lastStatus] = status.reverse();
 
-                console.log('Deployment', deployment);
-
                 if (lastStatus.state === 'pending') {
-                  console.log('Pending');
+                  const [version] = deployment.ref.split('/').reverse();
+                  const environment = deployment.environment.toLowerCase().replace(' ','');
+
+                  const check = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/check.js`);
+
+                  github.repos.createDeploymentStatus({
+                    owner,
+                    repo,
+                    deployment_id: deployment.id,
+                    state: await check(version, environment)
+                  });
                 }
               })
             );
