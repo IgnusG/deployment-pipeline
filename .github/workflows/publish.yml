@@ -25,16 +25,28 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
+            const targets = ['Chrome', 'Firefox'];
+
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];
             const ref = '${{ github.ref }}';
-            const environment = '${{ github.event.action }}' === 'released' ? 'public' : 'preview'
 
-            github.repos.createDeployment({
-              owner,
-              repo,
-              ref,
-              required_contexts: [],
-              environment
-            })
+            const environment = '${{ github.event.action }}' === 'released' ? 'Public' : 'Preview';
+
+            await Promise.all(targets.map(async (target) => 
+              const { data: { id } } = await github.repos.createDeployment({
+                owner,
+                repo,
+                ref,
+                required_contexts: [],
+                environment: `${target} - ${environment}`
+              });
+
+              github.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: id,
+                state: 'pending'
+              });
+            ));
 
