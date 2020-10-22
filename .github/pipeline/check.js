@@ -1,4 +1,4 @@
-const fetch = require('${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/node-fetch/lib/index.js');
+const fetch = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/node-fetch/lib/index.js`);
 
 const targetURL = {
     'chrome': 'https://chrome.google.com/webstore/detail/',
@@ -76,11 +76,9 @@ async function fetchListing(environment) {
     }
 }
 
-async function check(version, environment, secrets) {
+async function check(version, environment) {
     const listing = await fetchListing(environment);
     const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
-
-    console.log('Secrets', secrets);
 
     if (listing === '')
         return 'error';

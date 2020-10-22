@@ -62,10 +62,7 @@ jobs:
                     owner,
                     repo,
                     deployment_id: deployment.id,
-                    state: await check(version, environment, {
-                      CHROME_PUBLIC: process.env.CHROME_PUBLIC,
-                      FIREFOX_PUBLIC: process.env.FIREFOX_PUBLIC
-                    })
+                    state: await check(version, environment)
                   });
                 }
               })
