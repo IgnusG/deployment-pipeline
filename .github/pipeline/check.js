@@ -63,32 +63,28 @@ async function fetchListing(environment) {
     if (!checkIfEnvironmentExists(target, environment))
         return '';
 
-    if (channel === 'preview') {
-        return fetchWithToken(target);
-    } else {
-        return fetchWithoutToken(target);
+    try {
+        if (channel === 'preview') {
+            return fetchWithToken(target);
+        } else {
+            return fetchWithoutToken(target);
+        }
+    } catch {
+        return '';
     }
 }
 
 async function check(version, environment) {
-    try {
-        const listing = await fetchListing(environment);
-        const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
+    const listing = await fetchListing(environment);
+    const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
 
-        console.log('Type of Listing', typeof listing);
+    if (listing === '')
+        return 'error';
 
-        if (listing === '')
-            return 'error';
+    if (versionMatcher.test(listing))
+        return 'success';
 
-        if (listing.test(versionMatcher))
-            return 'success';
-
-        return 'pending';
-    } catch (error) {
-        console.error('Error', error, 'for version', version, 'environment', environment);
-
-        throw new Error(error);
-    }
+    return 'pending';
 }
 
 module.exports = check;
