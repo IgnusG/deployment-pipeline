@@ -5,24 +5,24 @@ const targetURL = {
 
 const tokenURLAndBody = {
     'chrome': ['https://www.googleapis.com/oauth2/v4/token', {
-        client_id: process.env['chrome_client_id'],
-        client_secret: process.env['chrome_client_secret'],
-        refresh_token: process.env['chrome_refresh_token'],
+        client_id: process.env.CHROME_CLIENT_ID,
+        client_secret: process.env.CHROME_CLIENT_SECRET,
+        refresh_token: process.env.CHROME_REFRESH_TOKEN,
         grant_type: 'refresh_token'
     }]
 };
 
 const environmentID = {
-    'chrome-public': process.env['chrome_public'],
-    'chrome-preview': process.env['chrome_preview'],
-    'firefox-public': process.env['firefox_public']
+    'chrome-public': process.env.CHROME_PUBLIC,
+    'chrome-preview': process.env.CHROME_PREVIEW,
+    'firefox-public': process.env.FIREFOX_PUBLIC
 }
 
 function checkIfEnvironmentExists(target, environment) {
     const root = targetURL[target];
     const id = environmentID[environment];
 
-    console.log('Root, ID', root, id);
+    console.log('Root, ID for environment', root, id, environment);
 
     if (!root) return false;
     if (!id) return false;
@@ -74,9 +74,11 @@ async function fetchListing(environment) {
     }
 }
 
-async function check(version, environment) {
+async function check(version, environment, secrets) {
     const listing = await fetchListing(environment);
     const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
+
+    console.log('Secrets', secrets);
 
     if (listing === '')
         return 'error';
