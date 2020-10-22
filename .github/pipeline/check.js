@@ -71,16 +71,24 @@ async function fetchListing(environment) {
 }
 
 async function check(version, environment) {
-    const listing = await fetchListing(environment);
-    const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
+    try {
+        const listing = await fetchListing(environment);
+        const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
 
-    if (listing === '')
-        return 'error';
+        console.log('Type of Listing', typeof listing);
 
-    if (listing.test(versionMatcher))
-        return 'success';
+        if (listing === '')
+            return 'error';
 
-    return 'pending';
+        if (listing.test(versionMatcher))
+            return 'success';
+
+        return 'pending';
+    } catch (error) {
+        console.error('Error', error, 'for version', version, 'environment', environment);
+
+        throw new Error(error);
+    }
 }
 
 module.exports = check;
