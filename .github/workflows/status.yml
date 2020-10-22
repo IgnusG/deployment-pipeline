@@ -10,6 +10,8 @@ jobs:
     name: Update Deployment Status
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - name: Update all deployments
         uses: actions/github-script@v3
         env:
