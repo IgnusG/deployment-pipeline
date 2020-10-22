@@ -47,7 +47,9 @@ jobs:
               });
 
               try {
-                await execa('make', ['publish', `target=${target}`, `channel=${channel}`]);
+                const { stdout } = await execa('make', ['publish', `target=${target}`, `channel=${channel}`]);
+
+                console.log(stdout);
               } catch (error) {
                 let description = `Failed to publish ${version}: ${error.message}`;
 
