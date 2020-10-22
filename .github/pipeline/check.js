@@ -22,6 +22,8 @@ function checkIfEnvironmentExists(target, environment) {
     const root = targetURL[target];
     const id = environmentID[environment];
 
+    console.log('Root, ID', root, id);
+
     if (!root) return false;
     if (!id) return false;
 
@@ -52,11 +54,15 @@ async function fetchWithoutToken(target, headers = {}) {
     });
     const result = await response.text();
 
+    console.log('Result', result);
+
     return result;
 }
 
 async function fetchListing(environment) {
     const [target, channel] = environment.split('-');
+
+    console.log('Target, Channel', target, channel);
 
     if (!checkIfEnvironmentExists(target, environment))
         return '';
@@ -73,7 +79,7 @@ async function check(version, environment) {
     const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
 
     if (listing === '')
-        return 'abandoned';
+        return 'error';
 
     if (listing.test(versionMatcher))
         return 'success';
