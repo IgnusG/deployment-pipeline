@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - run: npm ci
+        working-directory: ./.github/pipeline
+
       - name: Update all deployments
         uses: actions/github-script@v3
         env:
