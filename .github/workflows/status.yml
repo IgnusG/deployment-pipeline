@@ -19,11 +19,11 @@ jobs:
         uses: actions/github-script@v3
         env:
           CHROME_PUBLIC: ${{ secrets.CHROME_PUBLIC }}
-          CHROME_PREVIEW: 'CHROME_PREVIEW'
+          CHROME_PREVIEW: ${{ secrets.CHROME_PREVIEW }}
           FIREFOX_PUBLIC: ${{ secrets.FIREFOX_PUBLIC }}
-          CHROME_CLIENT_ID: 'CHROME_CLIENT_ID'
-          CHROME_CLIENT_SECRET: 'CHROME_CLIENT_SECRET'
-          CHROME_REFRESH_TOKEN: 'CHROME_REFRESH_TOKEN'
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
         with:
           script: |
             const owner = '${{ github.repository_owner }}';
