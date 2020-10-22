@@ -47,7 +47,7 @@ jobs:
               });
 
               try {
-                const { stdout } = await execa('make', ['publish', `target=${target}`, `channel=${channel}`]);
+                const { stdout } = await execa('make', ['publish', `target=${target.toLowerCase()}`, `channel=${channel}`]);
 
                 console.log(stdout);
               } catch (error) {
@@ -61,7 +61,8 @@ jobs:
                   repo,
                   deployment_id: id,
                   state: 'error',
-                  description
+                  description,
+                  log_url: 'https://github.com/${{ github.repository }}/runs/${{ github.run_id }}'
                 });
 
                 continue;
