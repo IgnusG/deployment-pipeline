@@ -24,8 +24,6 @@ function checkIfEnvironmentExists(target, environment) {
     const root = targetURL[target];
     const id = environmentID[environment];
 
-    console.log('Root, ID for environment', root, id, environment);
-
     if (!root) return false;
     if (!id) return false;
 
@@ -56,15 +54,11 @@ async function fetchWithoutToken(target, headers = {}) {
     });
     const result = await response.text();
 
-    console.log('Result', result);
-
     return result;
 }
 
 async function fetchListing(environment) {
     const [target, channel] = environment.split('-');
-
-    console.log('Target, Channel', target, channel);
 
     if (!checkIfEnvironmentExists(target, environment))
         return '';
