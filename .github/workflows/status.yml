@@ -58,11 +58,24 @@ jobs:
 
                   const check = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/check.js`);
 
+                  const [result, message] = await check(version, environment);
+
+                  if (result === 'remove') {
+                    return github.repos.deleteDeployment({
+                      owner,
+                      repo,
+                      deployment_id: deployment.id
+                    });
+                  }
+
+                  if (result === 'pending') return;
+
                   github.repos.createDeploymentStatus({
                     owner,
                     repo,
                     deployment_id: deployment.id,
-                    state: await check(version, environment)
+                    state: result,
+                    description: message
                   });
                 }
               })
