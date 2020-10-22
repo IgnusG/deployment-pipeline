@@ -51,7 +51,7 @@ jobs:
 
                 if (lastStatus.state === 'pending') {
                   const [version] = deployment.ref.split('/').reverse();
-                  const environment = deployment.environment.toLowerCase().replace(' ','');
+                  const environment = deployment.environment.toLowerCase().replaceAll(' ','');
 
                   const check = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/check.js`);
 
