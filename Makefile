@@ -2,16 +2,15 @@ version:
 	npm version $(bump) -m "Bump version to v%s" --preid="preview"
 
 build:
-	echo "Building $(channel)"
+	echo "Building $(channel) $(target)"
 
 package:
-	echo "Packaging $(channel)"
+	echo "Packaging $(channel) $(target)"
 
 upload:
-	echo "Uploading $(channel)"
+	echo "Uploading $(channel) $(target)"
 
 publish:
-	make build channel=$(channel) && \
-	make package channel=$(channel) && \
-	make upload channel=$(channel)
-
+	make build channel=$(channel) target=$(target) && \
+	make package channel=$(channel) target=$(target) && \
+	make upload channel=$(channel) target=$(target)

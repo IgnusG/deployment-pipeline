@@ -2,6 +2,7 @@
   "name": "pipeline",
   "version": "1.0.0",
   "dependencies": {
+    "execa": "^4.0.3",
     "node-fetch": "^2.6.1"
   }
 }

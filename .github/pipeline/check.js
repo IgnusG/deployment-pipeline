@@ -1,4 +1,4 @@
-const fetch = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/node-fetch/lib/index.js`);
+const fetch = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/node-fetch`);
 
 const targetURL = {
     'chrome': 'https://chrome.google.com/webstore/detail/',
