@@ -52,10 +52,8 @@ jobs:
               statuses.map(async ([deployment, status]) => {
                 const [lastStatus] = status.reverse();
 
-                if (!lastStatus) {
-                  console.error('Deployment', deployment, 'has no status');
-                  throw new Error('Failed to get status');
-                }
+                if (!lastStatus)
+                  return console.error('Deployment', deployment, 'has no status - deleting');
 
                 if (lastStatus.state === 'pending') {
                   const [version] = deployment.ref.split('/').reverse();
