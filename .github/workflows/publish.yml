@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: bahmutov/npm-install@v1
-        
+
       - run: |
           make publish channel=public
         if: github.event.action == 'released'
@@ -33,7 +33,7 @@ jobs:
 
             const environment = '${{ github.event.action }}' === 'released' ? 'Public' : 'Preview';
 
-            await Promise.all(targets.map(async (target) => 
+            await Promise.all(targets.map(async (target) => {
               const { data: { id } } = await github.repos.createDeployment({
                 owner,
                 repo,
@@ -48,5 +48,4 @@ jobs:
                 deployment_id: id,
                 state: 'pending'
               });
-            ));
-
+            }));
