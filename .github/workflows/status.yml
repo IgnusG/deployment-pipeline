@@ -53,7 +53,7 @@ jobs:
                 const [lastStatus] = status.reverse();
 
                 if (!lastStatus)
-                  return console.error('Deployment', deployment, 'has no status - deleting');
+                  return console.error('Deployment', deployment, 'has no status');
 
                 if (lastStatus.state === 'pending') {
                   const [version] = deployment.ref.split('/').reverse();
