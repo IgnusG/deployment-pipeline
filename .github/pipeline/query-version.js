@@ -70,21 +70,12 @@ async function fetchListing(environment) {
     }
 }
 
-async function check(version, environment) {
-    try {
-        const listing = await fetchListing(environment);
-        const versionMatcher = new RegExp(`<meta itemprop="version" content="${version.replace('-', '.')}"\\/>`)
+async function queryVersion(environment) {
+    const listing = await fetchListing(environment);
 
-        if (listing === '')
-            return ['remove'];
+    if (listing === '') return '';
 
-        if (versionMatcher.test(listing))
-            return ['success', `Version ${version} is published`];
-
-        return ['pending'];
-    } catch (error) {
-        return ['error', error.message];
-    }
+    return listing.match(/<meta itemprop="version" content="([^"]*)"\/>/);
 }
 
-module.exports = check;
+module.exports = queryVersion;

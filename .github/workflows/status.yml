@@ -31,6 +31,9 @@ jobs:
 
             const tagsList = github.repos.list
 
+            const semver = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/semver`);
+            const queryVersion = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/query-version.js`);
+
             const { data: deployments } = await github.repos.listDeployments({
               owner,
               repo
@@ -44,42 +47,46 @@ jobs:
                   deployment_id: deployment.id
                 });
 
-                return [deployment, status];
+                const [latestStatus] = status.reverse();
+
+                return [deployment, latestStatus];
               })
             );
 
             await Promise.all(
               statuses.map(async ([deployment, status]) => {
-                const [lastStatus] = status.reverse();
-
-                if (!lastStatus)
+                if (!status)
                   return console.error('Deployment', deployment, 'has no status');
 
-                if (lastStatus.state === 'pending') {
+                if (status.state === 'pending') {
                   const [version] = deployment.ref.split('/').reverse();
                   const environment = deployment.environment.toLowerCase().replace(/ /g,'');
 
-                  const check = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/check.js`);
+                  try {
+                    const publishedVersion = await queryVersion(environment);
 
-                  const [result, message] = await check(version, environment);
+                    if (publishedVersion === '') {
+                      console.warn(`Deleting deployment since the environment ${environment} does not exist`)
 
-                  if (result === 'remove') {
-                    return github.repos.deleteDeployment({
+                      return github.repos.deleteDeployment({
+                        owner,
+                        repo,
+                        deployment_id: deployment.id
+                      });
+                    }
+
+                    if (semver.lt(publishedVersion, version)) return;
+
+                    github.repos.createDeploymentStatus({
                       owner,
                       repo,
-                      deployment_id: deployment.id
+                      deployment_id: deployment.id,
+                      state: 'success',
+                      description: `Version ${version} is published`
                     });
+                  } catch (error) {
+                    core.setError(`There was a problem checking the version for ${environment}: ${error}`);
                   }
-
-                  if (result === 'pending') return;
-
-                  github.repos.createDeploymentStatus({
-                    owner,
-                    repo,
-                    deployment_id: deployment.id,
-                    state: result,
-                    description: message
-                  });
                 }
               })
             );
