@@ -73,7 +73,7 @@ async function fetchListing(environment) {
 async function check(version, environment) {
     try {
         const listing = await fetchListing(environment);
-        const versionMatcher = new RegExp(`<meta itemprop="version" content="${version}"\\/>`)
+        const versionMatcher = new RegExp(`<meta itemprop="version" content="${version.replace('-', '.')}"\\/>`)
 
         if (listing === '')
             return ['remove'];
