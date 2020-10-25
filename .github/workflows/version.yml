@@ -43,7 +43,7 @@ jobs:
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];
             const version = '${{ steps.version.outputs.version }}';
-            const isPreview = version.includes('preview');
+            const isPreview = version.includes('-');
 
             github.repos.createRelease({
               owner,
@@ -81,4 +81,3 @@ jobs:
                 state: 'failure',
               });
             }
-

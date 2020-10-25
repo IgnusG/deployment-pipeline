@@ -1,5 +1,5 @@
 version:
-	npm version $(bump) -m "Bump version to v%s" --preid="preview"
+	npm version $(bump) -m "Bump version to v%s" --preid=""
 
 build:
 	echo "Building $(channel) $(target)"
