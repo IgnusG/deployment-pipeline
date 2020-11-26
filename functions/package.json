@@ -1,0 +1,25 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "predev": "npm run build",
+    "dev": "cd build && node -r esm"
+  },
+  "author": "IgnusG",
+  "license": "ISC",
+  "esm": {
+    "await": true
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.10",
+    "esm": "^3.2.25",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "@octokit/rest": "^18.0.9",
+    "dotenv": "^8.2.0"
+  }
+}
