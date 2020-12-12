@@ -20,73 +20,15 @@ jobs:
         env:
           CHROME_PUBLIC: ${{ secrets.CHROME_PUBLIC }}
           CHROME_PREVIEW: ${{ secrets.CHROME_PREVIEW }}
-          FIREFOX_PUBLIC: ${{ secrets.FIREFOX_PUBLIC }}
           CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          FIREFOX_PUBLIC: ${{ secrets.FIREFOX_PUBLIC }}
         with:
           script: |
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];
 
-            const tagsList = github.repos.list
+            const updateDeploymentStatuses = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/build/functions/update-deployment-statuses/update-deployment-statuses.js`);
 
-            const semver = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/semver`);
-            const queryVersion = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/query-version.js`);
-
-            const { data: deployments } = await github.repos.listDeployments({
-              owner,
-              repo
-            });
-
-            const statuses = await Promise.all(
-              deployments.map(async (deployment) => {
-                const { data: status } = await github.repos.listDeploymentStatuses({
-                  owner,
-                  repo,
-                  deployment_id: deployment.id
-                });
-
-                const [latestStatus] = status.reverse();
-
-                return [deployment, latestStatus];
-              })
-            );
-
-            await Promise.all(
-              statuses.map(async ([deployment, status]) => {
-                if (!status)
-                  return console.error('Deployment', deployment, 'has no status');
-
-                if (status.state === 'pending') {
-                  const [version] = deployment.ref.split('/').reverse();
-                  const environment = deployment.environment.toLowerCase().replace(/ /g,'');
-
-                  try {
-                    const publishedVersion = await queryVersion(environment);
-
-                    if (publishedVersion === '') {
-                      console.warn(`Deleting deployment since the environment ${environment} does not exist`)
-
-                      return github.repos.deleteDeployment({
-                        owner,
-                        repo,
-                        deployment_id: deployment.id
-                      });
-                    }
-
-                    if (semver.lt(publishedVersion, version)) return;
-
-                    github.repos.createDeploymentStatus({
-                      owner,
-                      repo,
-                      deployment_id: deployment.id,
-                      state: 'success',
-                      description: `Version ${version} is published`
-                    });
-                  } catch (error) {
-                    core.setError(`There was a problem checking the version for ${environment}: ${error}`);
-                  }
-                }
-              })
-            );
+            await updateDeploymentStatuses(owner, repo, github, core);

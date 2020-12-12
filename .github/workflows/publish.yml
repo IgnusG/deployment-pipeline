@@ -20,109 +20,14 @@ jobs:
         uses: actions/github-script@v3
         with:
           script: |
-            const targets = ['Chrome', 'Firefox'];
-
-            const execa = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/execa`);
-            const semver = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/node_modules/semver`);
-
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];
             const ref = '${{ github.ref }}';
 
             const [version] = ref.split('/').reverse();
 
-            const environment = {
-              'released': 'Public',
-              'prereleased': 'Preview'
-            }['${{ github.event.action }}'];
+            const action = '${{ github.event.action }}';
 
-            const channel = environment.toLowerCase();
+            const createDeployments = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/build/functions/create-deployments/create-deployments.js`);
 
-            function getDeployments(targetEnvironment) {
-              const { data: deployments } = await github.repos.listDeployments({
-                owner, repo,
-                environment: targetEnvironment
-              });
-
-              if (deployments.length === 0) {
-                const { data: { id } } = await github.repos.createDeployment({
-                  owner, repo, ref,
-                  required_contexts: [],
-                  environment: targetEnvironment
-                });
-
-                return id;
-              }
-
-              const [lastDeployment] = deployments.reverse();
-              const [lastVersion] = lastDeployment.ref.split('/').reverse();
-
-              if (semver.lt(version, lastVersion)) {
-                console.warn(`Version ${version} is older than the currently published ${lastVersion}`);
-
-                return null;
-              }
-
-              if (semver.gt(version, lastVersion)) {
-                const { data: { id } } = await github.repos.createDeployment({
-                  owner, repo, ref,
-                  required_contexts: [],
-                  environment: targetEnvironment
-                });
-
-                return id;
-              };
-
-              if (lastDeployment.ref !== ref) {
-                throw new Error(`Last deployment's ${lastDeployment.ref} should have been equal to ${ref}`);
-              }
-
-              const { data: statuses } = await github.repos.listDeploymentStatuses({
-                owner, repo,
-                deployment_id: lastDeployment.id
-              });
-
-              const [lastStatus] = statuses.reverse();
-
-              if (['error', 'failure'].includes(lastStatus.state))) {
-                return deployment.id;
-              }
-
-              console.warn(`${target} - ${environment} seems to already have been deployed`);
-
-              return null;
-            }
-
-            for(let target of targets) {
-              const deployment = getDeployments(`${target} - ${environment}`);
-
-              if (deployment === null) continue;
-
-              try {
-                const { stdout } = await execa('make', ['publish', `target=${target.toLowerCase()}`, `channel=${channel}`]);
-
-                console.log(stdout);
-              } catch (error) {
-                let description = `Failed to publish ${version}: ${error.message}`;
-
-                if (description.length > 140)
-                  description = `${description.slice(0, 136)}...`;
-
-                github.repos.createDeploymentStatus({
-                  owner, repo,
-                  deployment_id: deployment,
-                  state: 'error',
-                  description,
-                  log_url: 'https://github.com/${{ github.repository }}/runs/${{ github.run_id }}'
-                });
-
-                continue;
-              }
-
-              github.repos.createDeploymentStatus({
-                owner, repo,
-                deployment_id: deployment,
-                state: 'pending',
-                description: `Version ${version} is in review`
-              });
-            }
+            await createDeployments(version, action, owner, repo, ref, github);
