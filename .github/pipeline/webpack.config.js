@@ -7,9 +7,6 @@ module.exports = {
     status: "./src/functions/update-deployment-statuses/update-deployment-statuses.ts",
   },
   target: "node",
-  experiments: {
-    outputModule: true,
-  },
   module: {
     rules: [
       {
@@ -24,7 +21,8 @@ module.exports = {
     modules: ["node_modules", tsconfig.compilerOptions.baseUrl],
   },
   output: {
-    module: true,
+    library: '[name]',
+    libraryTarget: 'umd',
     filename: '[name].js',
     path: path.resolve(__dirname, 'build'),
   },
