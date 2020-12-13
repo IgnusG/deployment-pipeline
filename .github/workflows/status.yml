@@ -6,14 +6,23 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  status:
-    name: Update Deployment Status
+  prepare:
+    name: Prepare pipeline scripts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - run: npm ci
+      - uses: bahmutov/npm-install@v1
+
+      - run: npm run build
         working-directory: ./.github/pipeline
+
+  status:
+    name: Update Deployment Status
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - uses: actions/checkout@v2
 
       - name: Update all deployments
         uses: actions/github-script@v3
