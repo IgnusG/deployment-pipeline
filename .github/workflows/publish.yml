@@ -5,8 +5,8 @@ on:
     types: [released,prereleased]
 
 jobs:
-  prepare:
-    name: Prepare pipeline scripts
+  publish:
+    name: Publish extension version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,13 +17,6 @@ jobs:
 
       - run: npm run build
         working-directory: .github/pipeline
-
-  publish:
-    name: Publish extension version
-    runs-on: ubuntu-latest
-    needs: prepare
-    steps:
-      - uses: actions/checkout@v2
 
       - name: Create deployment
         uses: actions/github-script@v3
