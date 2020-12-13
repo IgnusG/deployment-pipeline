@@ -23,12 +23,15 @@ jobs:
       - name: Update all deployments
         uses: actions/github-script@v3
         env:
-          CHROME_PUBLIC: ${{ secrets.CHROME_PUBLIC }}
-          CHROME_PREVIEW: ${{ secrets.CHROME_PREVIEW }}
+          CHROME_LIVE: ${{ secrets.CHROME_LIVE }}
+          CHROME_DEVELOPER: ${{ secrets.CHROME_DEVELOPER }}
           CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
           CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
           CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          FIREFOX_PUBLIC: ${{ secrets.FIREFOX_PUBLIC }}
+          FIREFOX_LIVE: ${{ secrets.FIREFOX_LIVE }}
+          FIREFOX_DEVELOPER: ${{ secrets.FIREFOX_DEVELOPER }}
+          FIREFOX_ISS: ${{ secrets.FIREFOX_ISS }}
+          FIREFOX_SECRET: ${{ secrets.FIREFOX_SECRET }}
         with:
           script: |
             const owner = '${{ github.repository_owner }}';

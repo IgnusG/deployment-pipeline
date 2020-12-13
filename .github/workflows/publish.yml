@@ -20,6 +20,16 @@ jobs:
 
       - name: Create deployment
         uses: actions/github-script@v3
+        env:
+          CHROME_LIVE: ${{ secrets.CHROME_LIVE }}
+          CHROME_DEVELOPER: ${{ secrets.CHROME_DEVELOPER }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          FIREFOX_LIVE: ${{ secrets.FIREFOX_LIVE }}
+          FIREFOX_DEVELOPER: ${{ secrets.FIREFOX_DEVELOPER }}
+          FIREFOX_ISS: ${{ secrets.FIREFOX_ISS }}
+          FIREFOX_SECRET: ${{ secrets.FIREFOX_SECRET }}
         with:
           script: |
             const owner = '${{ github.repository_owner }}';
