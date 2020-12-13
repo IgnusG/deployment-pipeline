@@ -30,6 +30,6 @@ jobs:
 
             const action = '${{ github.event.action }}';
 
-            const createDeployments = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/build/functions/create-deployments/create-deployments.js`);
+            const createDeployments = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/build/publish.js`);
 
             await createDeployments(version, action, owner, repo, ref, github);
