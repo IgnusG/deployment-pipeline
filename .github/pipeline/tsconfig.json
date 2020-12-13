@@ -3,12 +3,12 @@
     "baseUrl": "./src",
     "target": "es5",
     "module": "commonjs",
-    "lib": ["es2019"],
+    "moduleResolution": "node",
+    "lib": ["ES2019.Array", "ES2018.Regexp"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "build/"
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*.ts"]
 }
