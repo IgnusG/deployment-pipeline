@@ -76,7 +76,7 @@ export async function queryVersion(environment: Environment): Promise<Result<str
 
     if (listing === "") return EnvironmentNotFound(environment);
 
-    const result = /<meta itemprop="version" content="(?'version'[^"]*)"\/>/.exec(listing);
+    const result = /<meta itemprop="version" content="(?<version>[^"]*)"\/>/.exec(listing);
 
     if (result === null) return VersionNotFound();
 
