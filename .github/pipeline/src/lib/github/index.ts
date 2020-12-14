@@ -11,6 +11,7 @@ import { Auth } from "./types";
 
 import { createDeployment } from "lib/github/create-deployment/create-deployment";
 import { listDeployments } from "lib/github/list-deployments/list-deployments";
+import { uploadReleaseAsset } from "lib/github/upload-release-asset/upload-release-asset";
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function GitHub(auth: Auth, github: Octokit) {
@@ -22,5 +23,8 @@ export function GitHub(auth: Auth, github: Octokit) {
     pendingDeployment: pendingDeployment(auth, github),
     failedDeployment: failedDeployment(auth, github),
     listDeployments: listDeployments(auth, github),
+    uploadReleaseAsset: uploadReleaseAsset(auth, github),
   };
 }
+
+export type GitHub = ReturnType<typeof GitHub>;

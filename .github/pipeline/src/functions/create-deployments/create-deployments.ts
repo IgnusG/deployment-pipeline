@@ -1,3 +1,6 @@
+import { join } from "path";
+import { existsSync } from "fs";
+
 import { Octokit } from "@octokit/rest";
 import { getValues } from "enum-util";
 import execa from "execa";
@@ -9,9 +12,21 @@ import { Channel, Target } from "lib/deployment/types";
 
 import { GitHub } from "lib/github";
 
+
 const ActionsToChannel = {
   released: Channel.Live,
   prereleased: Channel.Developer,
+};
+
+const uploadReleaseAsset = async (tag: string, name: string, github: GitHub): Promise<void> => {
+  if (!process.env.ASSET_PATH) return;
+  if (!process.env.GITHUB_WORKSPACE) return;
+
+  const filePath = join(process.env.GITHUB_WORKSPACE, process.env.ASSET_PATH, name);
+
+  if (!existsSync(filePath)) return;
+
+  await github.uploadReleaseAsset(tag, filePath);
 };
 
 export default async function createDeployments(
@@ -42,6 +57,8 @@ export default async function createDeployments(
       const { stdout } = await execa("make", ["publish", `target=${machineTarget}`, `channel=${machineChannel}`]);
 
       console.log(stdout);
+
+      await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
 
       await github.pendingDeployment(deployment.value, `Version ${version} is in review`);
     } catch (error) {
