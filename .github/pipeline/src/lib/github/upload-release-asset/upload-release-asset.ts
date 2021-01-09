@@ -4,7 +4,6 @@ import { Octokit } from "@octokit/rest";
 
 import { Auth } from "../types";
 
-
 export function uploadReleaseAsset(
   auth: Auth,
   github: Octokit,
