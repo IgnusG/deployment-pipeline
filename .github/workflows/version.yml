@@ -60,6 +60,16 @@ jobs:
               prerelease: true
             });
 
+            await github.repos.createCommitStatus({
+              owner,
+              repo,
+              sha,
+              context: 'CI/CD: Version Bump',
+              description: 'Version Bump Successful',
+              target_url: run_url,
+              state: 'success',
+            });
+
       - name: Handle errors
         if: always()
         uses: actions/github-script@v3
@@ -72,18 +82,11 @@ jobs:
             const sha = '${{ github.sha }}';
             const run_url = 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}';
 
-            await github.repos.createCommitComment({
-              owner,
-              repo,
-              commit_sha: sha,
-              body: `Bumping the version failed on this commit\nSee: ${run_url}`
-            });
-
             await github.repos.createCommitStatus({
               owner,
               repo,
               sha,
-              context: 'Continuous Delivery',
+              context: 'CI/CD: Version Bump',
               description: 'Version Bump Failed',
               target_url: run_url,
               state: 'failure',
