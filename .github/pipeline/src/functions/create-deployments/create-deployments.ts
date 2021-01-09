@@ -1,17 +1,18 @@
-import { join } from "path";
 import { existsSync } from "fs";
+import { join } from "path";
 
 import { Octokit } from "@octokit/rest";
 import { getValues } from "enum-util";
-import execa from "execa";
 
 import getDeployments from "functions/get-deployments/get-deployments";
 
-import { environmentToTargetAndChannel, targetAndChannelToEnvironment } from "lib/deployment/environment";
+import { Environment, environmentToTargetAndChannel, targetAndChannelToEnvironment } from "lib/deployment/environment";
 import { Channel, Target } from "lib/deployment/types";
 
+import { AppErr, AppError, Ok, Result } from "lib/errors";
+import { execute } from "lib/execute";
 import { GitHub } from "lib/github";
-
+import { Deployment } from "lib/github/types";
 
 const ActionsToChannel = {
   released: Channel.Live,
@@ -29,6 +30,82 @@ const uploadReleaseAsset = async (tag: string, name: string, github: GitHub): Pr
   await github.uploadReleaseAsset(tag, filePath);
 };
 
+const FailedToBuild = AppError("Failed to build/package");
+
+async function buildAndPackage(
+  environment: Environment,
+  version: string,
+  deployment: Deployment,
+  github: GitHub,
+): Promise<Result<void, AppErr>> {
+  const [target, channel] = environmentToTargetAndChannel(environment);
+  const [machineTarget, machineChannel] = [target.toLowerCase(), channel.toLowerCase()];
+
+  try {
+    const build = await execute(`make build target=${machineTarget} channel=${machineChannel}`);
+
+    console.log(build);
+
+    const pack = await execute(`make package target=${machineTarget} channel=${machineChannel}`);
+
+    console.log(pack);
+  } catch (error) {
+    const message = (error as { message: string })?.message ?? (error as string);
+    let description = `Failed to build/package ${version} for ${environment}: ${message}`;
+
+    if (description.length > 140) description = `${description.slice(0, 136)}...`;
+
+    await github.failedDeployment(deployment, description);
+
+    return FailedToBuild(message);
+  }
+
+  return Ok(void null);
+}
+
+const FailedToPublish = AppError("Failed to publish");
+const NoAutoPublish = AppError("Automatic publishing not available");
+
+type PublishError = typeof FailedToPublish["type"] | typeof NoAutoPublish["type"];
+
+async function publish(
+  environment: Environment,
+  version: string,
+  deployment: Deployment,
+  github: GitHub,
+): Promise<Result<void, PublishError>> {
+  const [target, channel] = environmentToTargetAndChannel(environment);
+  const [machineTarget, machineChannel] = [target.toLowerCase(), channel.toLowerCase()];
+
+  try {
+    const output = await execute(`make publish target=${machineTarget} channel=${machineChannel}`);
+
+    console.log(output);
+
+    await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
+
+    await github.pendingDeployment(deployment, `Version ${version} is in review`);
+  } catch (error) {
+    const message = (error as { message: string })?.message ?? (error as string);
+
+    if (message.includes("AUT-EXT-1")) {
+      await github.successfulDeployment(deployment, `Version ${version} is ready for manual publish`);
+
+      return NoAutoPublish(`For environment ${environment}`);
+    }
+
+    let description = `Failed to publish ${version} for ${environment}: ${message}`;
+
+    if (description.length > 140) description = `${description.slice(0, 136)}...`;
+
+    await github.failedDeployment(deployment, description);
+
+    return FailedToPublish(message);
+  }
+
+  return Ok(undefined);
+}
+
 export default async function createDeployments(
   version: string,
   action: keyof typeof ActionsToChannel,
@@ -41,7 +118,6 @@ export default async function createDeployments(
 
   for (const target of getValues(Target)) {
     const environment = targetAndChannelToEnvironment(target, ActionsToChannel[action]);
-
     const deployment = await getDeployments(environment, version, ref, github);
 
     if (deployment.isErr()) {
@@ -50,25 +126,27 @@ export default async function createDeployments(
       continue;
     }
 
-    try {
-      const [target, channel] = environmentToTargetAndChannel(environment);
-      const [machineTarget, machineChannel] = [target.toLowerCase(), channel.toLowerCase()];
+    const builtAndPackaged = await buildAndPackage(environment, version, deployment.value, github);
 
-      const { stdout } = await execa("make", ["publish", `target=${machineTarget}`, `channel=${machineChannel}`]);
+    if (builtAndPackaged.isErr()) {
+      console.error(builtAndPackaged.error.message);
 
-      console.log(stdout);
+      continue;
+    }
 
-      await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
+    const published = await publish(environment, version, deployment.value, github);
 
-      await github.pendingDeployment(deployment.value, `Version ${version} is in review`);
-    } catch (error) {
-      const message = (error as { message: string })?.message ?? (error as string);
+    if (published.isOk()) continue;
 
-      let description = `Failed to publish ${version}: ${message}`;
-
-      if (description.length > 140) description = `${description.slice(0, 136)}...`;
-
-      await github.failedDeployment(deployment.value, description);
+    switch (published.error.identifier) {
+      case FailedToPublish.match: {
+        console.error(published.error.message);
+        break;
+      }
+      case NoAutoPublish.match: {
+        console.warn(published.error.message);
+        break;
+      }
     }
   }
 }
