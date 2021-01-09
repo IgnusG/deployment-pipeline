@@ -9,12 +9,14 @@ export const PublishedVersionIsNewer = AppError("Published version is newer");
 export const VersionAlreadyPublished = AppError("Version is already published");
 export const DeploymentRefMismatch = AppError("Deployment Ref does not match the release ref");
 
+export type GetDeploymentsErrors = typeof PublishedVersionIsNewer.type | typeof VersionAlreadyPublished.type | typeof DeploymentRefMismatch.type;
+
 export default async function getDeployments(
   environment: Environment,
   version: string,
   ref: string,
   github: ReturnType<typeof GitHub>,
-): Promise<Result<Deployment, AppErr>> {
+): Promise<Result<Deployment, GetDeploymentsErrors>> {
   const deployments = await github.listDeployments(environment);
 
   if (!deployments.length) {

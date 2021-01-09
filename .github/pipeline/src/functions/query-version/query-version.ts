@@ -12,7 +12,7 @@ import {
   OAuth2Target,
   Target,
 } from "lib/deployment/types";
-import { AppErr, AppError, Ok, Result } from "lib/errors";
+import { AppError, Ok, Result } from "lib/errors";
 
 interface TokenResponse {
   access_token: string;
@@ -21,6 +21,8 @@ interface TokenResponse {
 export const EnvironmentNotFound = AppError("Environment not found");
 export const VersionQueryFailed = AppError("Version query failed");
 export const VersionNotFound = AppError("Version not found");
+
+export type QueryVersionErrors = typeof EnvironmentNotFound.type | typeof VersionQueryFailed.type | typeof VersionNotFound.type;
 
 async function fetchWithOAuth2(target: OAuth2Target, channel: Channel): Promise<string> {
   const { request_url, ...payload } = createOAuth2Token(target);
@@ -70,7 +72,7 @@ async function fetchListing(environment: Environment): Promise<string> {
   }
 }
 
-export async function queryVersion(environment: Environment): Promise<Result<string | null, AppErr>> {
+export async function queryVersion(environment: Environment): Promise<Result<string, QueryVersionErrors>> {
   try {
     const listing = await fetchListing(environment);
 
