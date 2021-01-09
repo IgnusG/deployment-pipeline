@@ -38,4 +38,4 @@ jobs:
 
             const updateDeploymentStatuses = require(`${process.env.GITHUB_WORKSPACE}/.github/pipeline/build/status.js`).default;
 
-            await updateDeploymentStatuses(owner, repo, github, core);
+            await updateDeploymentStatuses(owner, repo, github);
