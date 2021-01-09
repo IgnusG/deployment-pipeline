@@ -12,5 +12,9 @@
   "bugs": {
     "url": "https://github.com/IgnusG/deployment-pipeline/issues"
   },
-  "homepage": "https://github.com/IgnusG/deployment-pipeline#readme"
+  "homepage": "https://github.com/IgnusG/deployment-pipeline#readme",
+  "devDependencies": {
+    "archiver": "^5.1.0",
+    "chrome-webstore-upload": "^0.4.2"
+  }
 }
