@@ -27,7 +27,8 @@ module.exports = {
                 order: 'asc',
             },
             "newlines-between": "always-and-inside-groups"
-        }]
+        }],
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
     },
     settings: {
         "import/resolver": {
