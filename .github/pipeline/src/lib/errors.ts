@@ -9,6 +9,7 @@ export interface AppErr<T extends string = any> {
 interface ErrorConstructor<K extends string> {
   <T>(message?: string): Result<T, AppErr<K>>;
   match: K;
+  type: AppErr<K>;
 }
 
 export function AppError<K extends string>(identifier: K): ErrorConstructor<K> {
@@ -17,6 +18,7 @@ export function AppError<K extends string>(identifier: K): ErrorConstructor<K> {
   };
 
   constructor.match = identifier;
+  constructor.type = ("" as unknown) as AppErr<K>;
 
   return constructor;
 }
