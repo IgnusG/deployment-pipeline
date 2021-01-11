@@ -19,3 +19,15 @@
 1. Go to https://github.com/$OWNER$/$REPO$/deployments
 2. Search for your $TARGET$ - $CHANNEL$ environment
 3. `Success` means the version is available, `Pending` means it was successfully published but is still under review
+
+
+## Others
+
+### `extension/functions`
+
+This is a default implementation of how the bundling, packaging and publishing steps should look like.
+The bundling step should be the only one you need to adjust. The other two can be taken one to one.
+
+### `functions`
+
+Helper methods for resetting the development version of this repository to its pure state.
