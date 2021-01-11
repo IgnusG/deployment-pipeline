@@ -8,4 +8,6 @@ const finalManifest = {
     version,
 };
 
+if (!fs.existsSync("build")) fs.mkdirSync("build");
+
 fs.writeFileSync("build/manifest.json", JSON.stringify(finalManifest, null, 2));
