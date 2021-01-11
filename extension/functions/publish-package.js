@@ -35,7 +35,7 @@ async function uploadChromePackage(channel) {
         extensionId: process.env[`CHROME_${channel.toUpperCase()}`],
         clientId: process.env.CHROME_CLIENT_ID,
         clientSecret: process.env.CHROME_CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
+        refreshToken: process.env.CHROME_REFRESH_TOKEN,
     });
 
     const token = await store.fetchToken();
