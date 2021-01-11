@@ -11,8 +11,15 @@ if (!target || !channel) {
 
 const asset = `dist/${target}-${channel}.zip`;
 
-if (!fs.existsSync(asset))
+if (!fs.existsSync(asset)) {
+    fs.readdir("dist", (err, files) => {
+        files.forEach(file => {
+            console.log("Instead found", file);
+        });
+    });
+
     throw new Error(`Asset ${asset} does not exist`);
+}
 
 const package = fs.createReadStream(`dist/${target}-${channel}.zip`);
 
