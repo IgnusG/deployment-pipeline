@@ -42,11 +42,11 @@ async function buildAndPackage(
   const [machineTarget, machineChannel] = [target.toLowerCase(), channel.toLowerCase()];
 
   try {
-    const build = await execute(`make build target=${machineTarget} channel=${machineChannel}`);
+    const build = execute(`make build target=${machineTarget} channel=${machineChannel}`);
 
     console.log(build);
 
-    const pack = await execute(`make package target=${machineTarget} channel=${machineChannel}`);
+    const pack = execute(`make package target=${machineTarget} channel=${machineChannel}`);
 
     console.log(pack);
   } catch (error) {
@@ -78,18 +78,28 @@ async function publish(
   const [machineTarget, machineChannel] = [target.toLowerCase(), channel.toLowerCase()];
 
   try {
-    const output = await execute(`make publish target=${machineTarget} channel=${machineChannel}`);
+    const output = execute(`make publish target=${machineTarget} channel=${machineChannel}`);
 
     console.log(output);
-
-    await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
 
     await github.pendingDeployment(deployment, `Version ${version} is in review`);
   } catch (error) {
     const message = (error as { message: string })?.message ?? (error as string);
 
     if (message.includes("AUT-EXT-1")) {
-      await github.successfulDeployment(deployment, `Version ${version} is ready for manual publish`);
+      try {
+        await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
+
+        await github.successfulDeployment(deployment, `Version ${version} is ready for manual publish`);
+      } catch (nestedError) {
+        let description = `Failed to publish ${version} for ${environment}: ${message}`;
+
+        if (description.length > 140) description = `${description.slice(0, 136)}...`;
+
+        await github.failedDeployment(deployment, description);
+
+        return FailedToPublish(message);
+      }
 
       return NoAutoPublish(`For environment ${environment}`);
     }

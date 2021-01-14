@@ -1,9 +1,9 @@
 import execa from "execa";
 
-export async function execute(command: string): Promise<string> {
-  const [cmd, ...parameters] = command.split(" ");
+export function execute(command: string): string {
+  const { stdout, stderr } = execa.commandSync(command);
 
-  const { stdout } = await execa(cmd, parameters);
+  console.log("Standard Error", stderr);
 
   return stdout;
 }
