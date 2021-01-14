@@ -7,7 +7,7 @@ import { Auth } from "../types";
 export function uploadReleaseAsset(
   auth: Auth,
   github: Octokit,
-): (tag: string, path: string, name?: string) => Promise<void> {
+): (tag: string, path: string, name: string) => Promise<void> {
   return async (tag, path, name) => {
     const {
       data: { id },
@@ -15,6 +15,8 @@ export function uploadReleaseAsset(
       ...auth,
       tag,
     });
+
+    console.log("Publishing Asset", path, "for tag", tag, "under ID", id);
 
     const fileBuffer = fs.readFileSync(path);
 
