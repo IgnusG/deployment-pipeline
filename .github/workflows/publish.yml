@@ -33,6 +33,7 @@ jobs:
           FIREFOX_ISS: ${{ secrets.FIREFOX_ISS }}
           FIREFOX_SECRET: ${{ secrets.FIREFOX_SECRET }}
         with:
+          working-directory: .
           script: |
             const owner = '${{ github.repository_owner }}';
             const repo = '${{ github.repository }}'.split('/')[1];

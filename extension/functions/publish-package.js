@@ -1,6 +1,7 @@
-const fs = require('fs');
+const fs = require("fs");
+const path = require("path");
 
-const chrome = require('chrome-webstore-upload');
+const chrome = require("chrome-webstore-upload");
 
 const target = process.env.TARGET;
 const channel = process.env.CHANNEL;
@@ -10,6 +11,8 @@ if (!target || !channel) {
 }
 
 const asset = `dist/${target}-${channel}.zip`;
+
+console.log(`Publishing to ${target} under ${channel} from`, path.join(process.cwd, asset));
 
 if (!fs.existsSync(asset)) {
     fs.readdir("dist", (err, files) => {
@@ -66,4 +69,4 @@ function uploadEdgePackage() {
         case "edge": return uploadEdgePackage(channel);
         default: throw new Error(`Target ${target} unknown`);
     }
-})().catch((error) => console.error("Failed", error));
+})().then(() => console.log("Done!")).catch((error) => console.error("Failed", error));
