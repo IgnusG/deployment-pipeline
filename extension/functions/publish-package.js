@@ -77,4 +77,6 @@ function uploadEdgePackage() {
         case "edge": return uploadEdgePackage(channel);
         default: throw new Error(`Target ${target} unknown`);
     }
-})().then(() => console.log("Done!")).catch((error) => console.error("Failed", error));
+})().then(() => console.log("Done!")).catch((error) => {
+    throw error;
+});
