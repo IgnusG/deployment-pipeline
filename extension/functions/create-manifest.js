@@ -11,7 +11,7 @@ const finalManifest = {
 
 if (!fs.existsSync("build")) fs.mkdirSync("build");
 
-console.log("Creating manifest.json in", path.join(process.cwd, "build"));
+console.log("Creating manifest.json in", path.join(process.cwd(), "build"));
 
 fs.writeFileSync("build/manifest.json", JSON.stringify(finalManifest, null, 2));
 

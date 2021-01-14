@@ -12,7 +12,7 @@ if (!target || !channel) {
 
 const asset = `dist/${target}-${channel}.zip`;
 
-console.log(`Publishing to ${target} under ${channel} from`, path.join(process.cwd, asset));
+console.log(`Publishing to ${target} under ${channel} from`, path.join(process.cwd(), asset));
 
 if (!fs.existsSync(asset)) {
     fs.readdir("dist", (err, files) => {
