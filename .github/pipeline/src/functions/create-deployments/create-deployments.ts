@@ -19,7 +19,7 @@ const ActionsToChannel = {
   prereleased: Channel.Developer,
 };
 
-const uploadReleaseAsset = async (tag: string, name: string, filename: string, github: GitHub): Promise<void> => {
+const uploadReleaseAsset = async (tag: string, filename: string, github: GitHub): Promise<void> => {
   if (!process.env.ASSET_PATH) return console.error("Cannot upload release asset: Missing ASSET_PATH");
   if (!process.env.GITHUB_WORKSPACE) return console.error("Cannot upload release asset: GITHUB_WORKSPACE not defined?");
 
@@ -27,7 +27,7 @@ const uploadReleaseAsset = async (tag: string, name: string, filename: string, g
 
   if (!existsSync(filePath)) return;
 
-  await github.uploadReleaseAsset(tag, filePath, name);
+  await github.uploadReleaseAsset(tag, filePath, filename);
 };
 
 const FailedToBuild = AppError("Failed to build/package");
@@ -82,7 +82,7 @@ async function publish(
 
     console.log(output);
 
-    await uploadReleaseAsset(version, environment, `${machineTarget}-${machineChannel}.zip`, github);
+    await uploadReleaseAsset(version, `${machineTarget}-${machineChannel}.zip`, github);
 
     await github.pendingDeployment(deployment, `Version ${version} is in review`);
   } catch (error) {

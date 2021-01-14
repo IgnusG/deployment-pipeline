@@ -16,7 +16,7 @@ export function uploadReleaseAsset(
       tag,
     });
 
-    console.log("Publishing Asset", path, "for tag", tag, "under ID", id);
+    console.log("Attaching Asset", path, "to tag", tag, "under ID", id);
 
     const fileBuffer = fs.readFileSync(path);
 
