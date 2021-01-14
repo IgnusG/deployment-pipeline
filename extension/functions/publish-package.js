@@ -29,20 +29,28 @@ const package = fs.createReadStream(`dist/${target}-${channel}.zip`);
 async function uploadChromePackage(channel) {
     function getChromeScope(channel) {
         if (channel === "live") return "default";
-        if (channel === "development") return "trustedTesters";
+        if (channel === "developer") return "trustedTesters";
 
         throw new Error(`Channel ${channel} unknown`);
     }
 
+    const extensionId = process.env[`CHROME_${channel.toUpperCase()}`];
+
+    console.log(`Creating Chrome Store for extension ${extensionId}`);
+
     const store = chrome({
-        extensionId: process.env[`CHROME_${channel.toUpperCase()}`],
+        extensionId,
         clientId: process.env.CHROME_CLIENT_ID,
         clientSecret: process.env.CHROME_CLIENT_SECRET,
         refreshToken: process.env.CHROME_REFRESH_TOKEN,
     });
 
+    console.log("Fetching token...");
+
     const token = await store.fetchToken();
     const scope = getChromeScope(channel);
+
+    console.log("Uploading & publishing extension...");
 
     await store.uploadExisting(package, token);
     await store.publish(scope, token);

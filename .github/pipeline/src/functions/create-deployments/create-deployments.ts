@@ -20,8 +20,8 @@ const ActionsToChannel = {
 };
 
 const uploadReleaseAsset = async (tag: string, name: string, github: GitHub): Promise<void> => {
-  if (!process.env.ASSET_PATH) return;
-  if (!process.env.GITHUB_WORKSPACE) return;
+  if (!process.env.ASSET_PATH) return console.error("Cannot upload release asset: Missing ASSET_PATH");
+  if (!process.env.GITHUB_WORKSPACE) return console.error("Cannot upload release asset: GITHUB_WORKSPACE not defined?");
 
   const filePath = join(process.env.GITHUB_WORKSPACE, process.env.ASSET_PATH, name);
 

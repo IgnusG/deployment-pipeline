@@ -7,7 +7,7 @@ const name = `${process.env.TARGET}-${process.env.CHANNEL}.zip`;
 
 if (!fs.existsSync("dist")) fs.mkdirSync("dist");
 
-console.log(`Creating archive ${name}`, path.join(process.cwd(), "dist"));
+console.log(`Creating archive ${name} in`, path.join(process.cwd(), "dist"));
 
 const output = fs.createWriteStream(`dist/${name}`);
 
