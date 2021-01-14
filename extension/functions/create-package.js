@@ -17,7 +17,7 @@ const archive = archiver("zip", {
 
 archive.pipe(output);
 
-archive.directory("build", ".");
+archive.directory("build/", false);
 archive.finalize();
 
 console.log("Done!")
