@@ -13,10 +13,12 @@ export function environmentToString(environment: Environment): string {
 }
 
 export function stringToEnvironment(string: string): Environment {
-  if (!Environment.includes(string as Environment))
-    throw new Error(`${string} is not a valid environment. These are ${Environment.join(", ")}`);
+  const environment = string.replace(" - ", "-");
 
-  return string.replace(" - ", "-") as Environment;
+  if (!Environment.includes(environment as Environment))
+    throw new Error(`${environment} is not a valid environment. These are ${Environment.join(", ")}`);
+
+  return environment as Environment;
 }
 
 export function targetAndChannelToEnvironment(target: Target, channel: Channel): Environment {
