@@ -1,7 +1,7 @@
 import { gt, lt } from "semver";
 
 import { Environment } from "lib/deployment/types";
-import { AppErr, AppError, Ok, Result } from "lib/errors";
+import { AppError, Ok, Result } from "lib/errors";
 import { GitHub } from "lib/github";
 import { Deployment } from "lib/github/types";
 
