@@ -1,28 +1,44 @@
-export enum Target {
-  Firefox = "Firefox",
-  Chrome = "Chrome",
-}
+import {
+  Target,
+  NoVerifyTargets,
+  JWTTargets,
+  OAuth2Targets,
+} from "../../../config";
 
-export enum Channel {
-  Live = "Live",
-  Developer = "Developer",
-}
+export {
+  environmentMapping,
+  Target,
+  Channel,
+  NoVerifyTargets,
+  JWTTargets,
+  OAuth2Targets,
+} from "../../../config";
 
-export { Environment } from "./environment";
+export {
+  Environment,
+  VerifyEnvironments,
+  NoVerifyEnvironments,
+  VerifyEnvironment,
+  NoVerifyEnvironment,
+} from "./environment";
 
 export enum AuthFlow {
   OAuth2 = "OAuth2",
   JWT = "JWT",
 }
 
-export const OAuth2Targets = [Target.Chrome] as const;
+export type NoVerifyTarget = typeof NoVerifyTargets[number];
+export type VerifyTarget = Exclude<Target, NoVerifyTarget>;
+
 export type OAuth2Target = typeof OAuth2Targets[number];
+export type JWTTarget = typeof JWTTargets[number];
+
+
+export const isNoVerifyTarget = (target: Target): target is NoVerifyTarget =>
+  NoVerifyTargets.includes(target as NoVerifyTarget);
 
 export const isOAuth2Target = (target: Target): target is OAuth2Target =>
   OAuth2Targets.includes(target as OAuth2Target);
-
-export const JWTTargets = [Target.Firefox] as const;
-export type JWTTarget = typeof JWTTargets[number];
 
 export const isJWTTarget = (target: Target): target is JWTTarget => JWTTargets.includes(target as JWTTarget);
 

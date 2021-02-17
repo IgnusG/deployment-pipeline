@@ -1,12 +1,66 @@
 import { getValues } from "enum-util";
 
-import { Channel, Target } from "./types";
+import {
+  environmentMapping,
+  Channel,
+  Target,
+  NoVerifyTargets,
+  NoVerifyTarget,
+  VerifyTarget,
+  isNoVerifyTarget,
+} from "./types";
 
-export const Environment = getValues(Target).flatMap((target) => {
-  return getValues(Channel).map((channel) => `${target}-${channel}` as const);
-});
+import { AppError, Ok, Result } from "lib/errors";
 
-export type Environment = typeof Environment[number];
+
+export type Environment = typeof environmentMapping extends Record<infer G, infer K>
+  ? G extends Target
+    ? K extends typeof environmentMapping[G]
+      ? `${G}-${K[number]}`
+      : never
+    : never
+  : never;
+
+export const Environments = Object.entries(environmentMapping).flatMap(
+  ([target, channels]) => channels.map((channel: Channel) => `${target}-${channel}`) as string[],
+) as Environment[];
+
+export type NoVerifyEnvironment = typeof environmentMapping extends Record<infer G, infer K>
+  ? G extends NoVerifyTarget
+    ? K extends typeof environmentMapping[G]
+      ? `${G}-${K[number]}`
+      : never
+    : never
+  : never;
+
+export const NoVerifyEnvironments = Object.keys(environmentMapping)
+  .filter((target) => NoVerifyTargets.includes(target as NoVerifyTarget))
+  .flatMap(
+    (target) =>
+      environmentMapping[target as keyof typeof environmentMapping].map(
+        (channel: Channel) => `${target}-${channel}`,
+      ) as string[],
+  ) as NoVerifyEnvironment[];
+
+export const isNoVerifyEnvironment = (environment: Environment): environment is NoVerifyEnvironment =>
+  isNoVerifyTarget(environmentToTargetAndChannel(environment)[0]);
+
+export type VerifyEnvironment = typeof environmentMapping extends Record<infer G, infer K>
+  ? G extends VerifyTarget
+    ? K extends typeof environmentMapping[G]
+      ? `${G}-${K[number]}`
+      : never
+    : never
+  : never;
+
+export const VerifyEnvironments = Object.keys(environmentMapping)
+  .filter((target) => !NoVerifyTargets.includes(target as NoVerifyTarget))
+  .flatMap(
+    (target) =>
+      environmentMapping[target as keyof typeof environmentMapping].map(
+        (channel: Channel) => `${target}-${channel}`,
+      ) as string[],
+  ) as VerifyEnvironment[];
 
 export function environmentToString(environment: Environment): string {
   return environment.replace("-", " - ");
@@ -15,15 +69,28 @@ export function environmentToString(environment: Environment): string {
 export function stringToEnvironment(string: string): Environment {
   const environment = string.replace(" - ", "-");
 
-  if (!Environment.includes(environment as Environment))
-    throw new Error(`${environment} is not a valid environment. These are ${Environment.join(", ")}`);
+  if (!Environments.includes(environment as Environment))
+    throw new Error(`${environment} is not a valid environment. These are ${Environments.join(", ")}`);
 
   return environment as Environment;
 }
 
-export function targetAndChannelToEnvironment(target: Target, channel: Channel): Environment {
-  return `${target}-${channel}` as Environment;
+const UnsupportedEnv = AppError("Environment not supported");
+
+export function targetAndChannelToEnvironment(
+  target: Target,
+  channel: Channel,
+): Result<Environment, typeof UnsupportedEnv["type"]> {
+  const environment = `${target}-${channel}` as Environment;
+
+  if (!Environments.includes(environment)) return UnsupportedEnv(environment);
+
+  return Ok(environment);
 }
+
+export function environmentToTargetAndChannel(environment: NoVerifyEnvironment): [NoVerifyTarget, Channel];
+export function environmentToTargetAndChannel(environment: VerifyEnvironment): [VerifyTarget, Channel];
+export function environmentToTargetAndChannel(environment: Environment): [Target, Channel];
 
 export function environmentToTargetAndChannel(environment: Environment): [Target, Channel] {
   const [target, channel] = environment.split("-") as [Target, Channel];
