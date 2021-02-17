@@ -1,22 +1,22 @@
 import { Octokit } from "@octokit/rest";
 
-import { lt } from "semver";
+import { gte } from "semver";
 
 import { EnvironmentNotFound, queryVersion, QueryVersionErrors } from "functions/query-version/query-version";
-import { Environment, stringToEnvironment } from "lib/deployment/environment";
+import { Environment, VerifyEnvironment, stringToEnvironment, isNoVerifyEnvironment } from "lib/deployment/environment";
 import { AppErr, Err, Ok, Recoverable, Result } from "lib/errors";
 import { GitHub } from "lib/github";
 import { Deployment, DeploymentStatus } from "lib/github/types";
 
-const deploymentSuccessful = (status: DeploymentStatus, deployment: Deployment): Result<boolean, AppErr> => {
+const isDeploymentPending = (status: DeploymentStatus, deployment: Deployment): Result<boolean, AppErr> => {
   if (!status) {
     return Recoverable(`Deployment ${deployment.id} has no status`);
   }
 
-  return Ok(status.state === "pending" ? false : true);
+  return Ok(status.state === "pending");
 };
 
-const createGetLatestPublishedVersion = (): (environment: Environment) => Promise<Result<string, QueryVersionErrors>> => {
+const createGetLatestPublishedVersion = (): (environment: VerifyEnvironment) => Promise<Result<string, QueryVersionErrors>> => {
   const publishedVersions = new Map<Environment, Result<string, QueryVersionErrors>>();
 
   return async (environment) => {
@@ -35,18 +35,22 @@ export default async function updateDeploymentStatuses(owner: string, repo: stri
 
   const getLatestPublishedVersion = createGetLatestPublishedVersion();
 
-  for (const deployment of deployments) {
+  await Promise.all(deployments.map(async (deployment) => {
     const environment = stringToEnvironment(deployment.environment);
+
+    // We don't have to check no-verify environments
+    if (isNoVerifyEnvironment(environment)) return;
 
     const result = await (async (): Promise<Result<string, AppErr>> => {
       const status = await github.latestDeploymentStatus(deployment);
 
       const [version] = deployment.ref.split("/").reverse();
 
-      const deploymentStatus = deploymentSuccessful(status, deployment);
+      const deploymentPending = isDeploymentPending(status, deployment);
 
-      if (deploymentStatus.isErr()) return Err(deploymentStatus.error);
-      if (deploymentStatus.isOk() && deploymentStatus.value) return Ok("Deployment IS already successful");
+      if (deploymentPending.isErr()) return Err(deploymentPending.error);
+      if (deploymentPending.isOk() && !deploymentPending.value)
+        return Ok("Deployment is not pending");
 
       const publishedVersion = await getLatestPublishedVersion(environment);
 
@@ -63,9 +67,9 @@ export default async function updateDeploymentStatuses(owner: string, repo: stri
         }
       }
 
-      const isVersionPublished = lt(publishedVersion.value, version) ? false : true;
+      const versionPublished = gte(publishedVersion.value, version);
 
-      if (isVersionPublished == false) return Ok(`Version ${version} is not published yet`);
+      if (versionPublished == false) return Ok(`Version ${version} is not published yet`);
 
       await github.successfulDeployment(deployment, `Version ${version} is published`);
 
@@ -76,5 +80,5 @@ export default async function updateDeploymentStatuses(owner: string, repo: stri
       (result) => console.log(`Deployment for ${environment} successful - ${result}`),
       (error) => console.error(`Deployment for ${environment} failed - ${error.message}`),
     );
-  }
+  }));
 }
