@@ -1,6 +1,6 @@
 import { sign } from "jsonwebtoken";
 
-import { REQUIRED_JWT, REQUIRED_OAUTH2, TargetOAuthTokenURL } from "./config";
+import { REQUIRED_JWT, REQUIRED_OAUTH2, TargetOAuthTokenURL } from "./auth-config";
 import { JWTTarget, JWTToken, OAuth2Target, OAuth2Token } from "./types";
 
 export function createOAuth2Token(target: OAuth2Target): OAuth2Token {

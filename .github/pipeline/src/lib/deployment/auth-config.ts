@@ -1,11 +1,11 @@
-import { Channel, Target, OAuth2Targets } from "./types";
+import { Channel, Target, OAuth2Target, VerifyTarget } from "./types";
 
-export const TargetURL: Record<Target, string> = {
+export const TargetURL: Record<VerifyTarget, string> = {
   [Target.Chrome]: "https://chrome.google.com/webstore/detail/",
   [Target.Firefox]: "https://addons.mozilla.org/en-US/firefox/addon/",
 };
 
-export const TargetOAuthTokenURL: Record<typeof OAuth2Targets[number], string> = {
+export const TargetOAuthTokenURL: Record<OAuth2Target[number], string> = {
   [Target.Chrome]: "https://www.googleapis.com/oauth2/v4/token",
 };
 
