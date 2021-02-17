@@ -2,6 +2,12 @@ import { Octokit } from "@octokit/rest";
 
 import { Auth, Deployment } from "../types";
 
+function sliceDescription(description: string): string {
+  if (description.length > 140) return `${description.slice(0, 136)}...`;
+
+  return description;
+}
+
 export function failedDeployment(
   auth: Auth,
   github: Octokit,
@@ -11,7 +17,7 @@ export function failedDeployment(
       ...auth,
       deployment_id: deployment.id,
       state: "error",
-      description: message,
+      description: sliceDescription(message),
       log_url: logs,
     });
   };
@@ -26,7 +32,7 @@ export function pendingDeployment(
       ...auth,
       deployment_id: deployment.id,
       state: "pending",
-      description: message,
+      description: sliceDescription(message),
     });
   };
 }
@@ -40,7 +46,7 @@ export function successfulDeployment(
       ...auth,
       deployment_id: deployment.id,
       state: "success",
-      description: message,
+      description: sliceDescription(message),
     });
   };
 }
