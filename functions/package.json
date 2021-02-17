@@ -1,15 +1,10 @@
 {
-  "name": "functions",
-  "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "predev": "npm run build",
     "dev": "cd build && node -r esm"
   },
-  "author": "IgnusG",
-  "license": "ISC",
   "esm": {
     "await": true
   },

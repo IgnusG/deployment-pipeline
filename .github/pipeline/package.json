@@ -1,6 +1,4 @@
 {
-  "name": "pipeline",
-  "version": "1.0.0",
   "scripts": {
     "build": "webpack",
     "lint": "eslint --ext ts src",

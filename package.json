@@ -1,18 +1,5 @@
 {
-  "name": "deployment-pipeline",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/IgnusG/deployment-pipeline.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/IgnusG/deployment-pipeline/issues"
-  },
-  "homepage": "https://github.com/IgnusG/deployment-pipeline#readme",
+  "version": "1.0.2",
   "devDependencies": {
     "archiver": "^5.1.0",
     "chrome-webstore-upload": "^0.4.2"
