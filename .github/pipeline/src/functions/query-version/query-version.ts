@@ -1,16 +1,16 @@
 import fetch from "node-fetch";
 
 import { createJWTToken, createOAuth2Token } from "lib/deployment/auth";
-import { getEnvironmentID, TargetURL } from "lib/deployment/config";
+import { getEnvironmentID, TargetURL } from "lib/deployment/auth-config";
 import { environmentToTargetAndChannel } from "lib/deployment/environment";
 import {
   Channel,
-  Environment,
   isJWTTarget,
   isOAuth2Target,
   JWTTarget,
   OAuth2Target,
-  Target,
+  VerifyTarget,
+  VerifyEnvironment,
 } from "lib/deployment/types";
 import { AppError, Ok, Result } from "lib/errors";
 
@@ -49,7 +49,7 @@ async function fetchWithJWT(target: JWTTarget, channel: Channel): Promise<string
   });
 }
 
-async function fetchWithoutToken(target: Target, channel: Channel, headers = {}): Promise<string> {
+async function fetchWithoutToken(target: VerifyTarget, channel: Channel, headers = {}): Promise<string> {
   const response = await fetch(`${TargetURL[target]}/${getEnvironmentID(target, channel)}`, {
     headers,
   });
@@ -58,7 +58,7 @@ async function fetchWithoutToken(target: Target, channel: Channel, headers = {})
   return result;
 }
 
-async function fetchListing(environment: Environment): Promise<string> {
+async function fetchListing(environment: VerifyEnvironment): Promise<string> {
   const [target, channel] = environmentToTargetAndChannel(environment);
 
   if (channel === Channel.Developer) {
@@ -66,13 +66,13 @@ async function fetchListing(environment: Environment): Promise<string> {
 
     if (isOAuth2Target(target)) return fetchWithOAuth2(target, channel);
 
-    throw new Error(`Developer Channel selected, but authorization for target ${target as string} is not supported`);
+    return fetchWithoutToken(target, channel);
   } else {
     return fetchWithoutToken(target, channel);
   }
 }
 
-export async function queryVersion(environment: Environment): Promise<Result<string, QueryVersionErrors>> {
+export async function queryVersion(environment: VerifyEnvironment): Promise<Result<string, QueryVersionErrors>> {
   try {
     const listing = await fetchListing(environment);
 
