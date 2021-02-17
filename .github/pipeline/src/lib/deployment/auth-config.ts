@@ -13,9 +13,9 @@ export function getEnvironmentID(target: Target, channel: Channel): string {
   const TARGET = target.toUpperCase();
   const CHANNEL = channel.toUpperCase();
 
-  const ID = process.env[`${TARGET}_${CHANNEL}`];
+  const ID = process.env[`${TARGET}_${CHANNEL}_ID`];
 
-  if (ID === undefined) throw new Error(`Missing ID ${TARGET}_${CHANNEL} (env variable)`);
+  if (ID === undefined) throw new Error(`Missing ID ${TARGET}_${CHANNEL}_ID (env variable)`);
 
   return ID;
 }

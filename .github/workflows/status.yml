@@ -22,15 +22,15 @@ jobs:
       - name: Update all deployments
         uses: actions/github-script@v3
         env:
-          CHROME_LIVE: ${{ secrets.CHROME_LIVE }}
-          CHROME_DEVELOPER: ${{ secrets.CHROME_DEVELOPER }}
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          FIREFOX_LIVE: ${{ secrets.FIREFOX_LIVE }}
-          FIREFOX_DEVELOPER: ${{ secrets.FIREFOX_DEVELOPER }}
-          FIREFOX_ISS: ${{ secrets.FIREFOX_ISS }}
-          FIREFOX_SECRET: ${{ secrets.FIREFOX_SECRET }}
+          CHROME_LIVE_ID: ${{ secrets.CHROME_LIVE_ID }}
+          CHROME_DEVELOPER_ID: ${{ secrets.CHROME_DEVELOPER_ID }}
+          CHROME_OAUTH_CLIENT_ID: ${{ secrets.CHROME_OAUTH_CLIENT_ID }}
+          CHROME_OAUTH_CLIENT_SECRET: ${{ secrets.CHROME_OAUTH_CLIENT_SECRET }}
+          CHROME_OAUTH_REFRESH_TOKEN: ${{ secrets.CHROME_OAUTH_REFRESH_TOKEN }}
+          FIREFOX_LIVE_ID: ${{ secrets.FIREFOX_LIVE_ID }}
+          FIREFOX_DEVELOPER_ID: ${{ secrets.FIREFOX_DEVELOPER_ID }}
+          FIREFOX_JWT_ISS: ${{ secrets.FIREFOX_JWT_ISS }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
         with:
           script: |
             const owner = '${{ github.repository_owner }}';
