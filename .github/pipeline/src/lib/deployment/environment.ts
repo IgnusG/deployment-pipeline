@@ -25,9 +25,9 @@ function buildEnvironments<T extends Environment>(filter: (target: Target) => bo
     .filter((target) => filter(target as Target))
     .flatMap(
       (target) =>
-        environmentMapping[target as keyof typeof environmentMapping].map(
-          (channel: Channel) => `${target}-${channel}`,
-        ) as string[],
+        (environmentMapping[target as keyof typeof environmentMapping] as unknown as string[]).map(
+          (channel) => `${target}-${channel}`,
+        ),
     ) as T[];
 }
 
