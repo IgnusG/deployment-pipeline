@@ -9,7 +9,7 @@
     "execa": "^4.0.3",
     "jsonwebtoken": "^8.5.1",
     "neverthrow": "^3.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "semver": "^7.3.2",
     "tslib": "^2.0.3",
     "type-fest": "^0.20.2"
